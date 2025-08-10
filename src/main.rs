@@ -3,6 +3,19 @@ use aw_models::{Bucket, Event};
 use chrono::TimeDelta;
 use serde_json::{Map, Value};
 use tokio::signal;
+use clap::Parser;
+
+#[derive(Debug, Parser)]
+#[command(name = "aw-watcher-win-vdesktop", version, about = "ActivityWatch watcher for Windows virtual desktops")] 
+struct Args {
+    /// Port to connect to aw-server. If specified, overrides --tesitng.
+    #[arg(long)]
+    port: Option<u16>,
+
+    /// Testing mode: uses port 5666 unless --port is provided
+    #[arg(long)]
+    tesitng: bool,
+}
 
 async fn create_bucket(
     aw_client: &AwClient,
@@ -43,7 +56,9 @@ fn get_current_vdesktop() -> String {
 
 #[tokio::main]
 async fn main() {
-    let port = 5666; // the testing port 
+    // Parse CLI
+    let cli = Args::parse();
+    let port = if let Some(p) = cli.port { p } else if cli.tesitng { 5666 } else { 5600 };
     let aw_client = AwClient::new("localhost", port, "aw-watcher-win-vdestkop").unwrap();
     let bucket_id = format!("aw-watcher-win-vdesktop_{}", aw_client.hostname);
  
