@@ -14,7 +14,7 @@ struct Args {
 
     /// Testing mode: uses port 5666 unless --port is provided
     #[arg(long)]
-    tesitng: bool,
+    testing: bool,
 }
 
 async fn create_bucket(
@@ -43,7 +43,6 @@ async fn create_bucket(
 
 fn get_current_vdesktop() -> String {
     let vdesktop = winvd::get_current_desktop().unwrap();
-    print!("{:?}", vdesktop);
 
     let vdesktop_name = vdesktop.get_name().unwrap();
     if vdesktop_name.is_empty() {
@@ -58,7 +57,7 @@ fn get_current_vdesktop() -> String {
 async fn main() {
     // Parse CLI
     let cli = Args::parse();
-    let port = if let Some(p) = cli.port { p } else if cli.tesitng { 5666 } else { 5600 };
+    let port = if let Some(p) = cli.port { p } else if cli.testing { 5666 } else { 5600 };
     let aw_client = AwClient::new("localhost", port, "aw-watcher-win-vdestkop").unwrap();
     let bucket_id = format!("aw-watcher-win-vdesktop_{}", aw_client.hostname);
  
