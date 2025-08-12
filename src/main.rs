@@ -72,7 +72,11 @@ async fn main() {
         let curr_vdesktop_name = get_current_vdesktop();
         vdesktop_data.insert(
             "vdesktop".to_string(),
-            Value::String(curr_vdesktop_name),
+            Value::String(curr_vdesktop_name.clone()),
+        );
+        vdesktop_data.insert(
+            "title".to_string(),
+            Value::String(curr_vdesktop_name.clone()),
         );
 
         let now = chrono::Utc::now();
