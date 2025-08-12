@@ -83,6 +83,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.99"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0674a1ddeecb70197781e945de4b3b8ffb61fa939a5597bcf48503737663100"
+
+[[package]]
+name = "auto-launch"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f012b8cc0c850f34117ec8252a44418f2e34a2cf501de89e29b241ae5f79471"
+dependencies = [
+ "dirs",
+ "thiserror",
+ "winreg 0.10.1",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -123,8 +140,10 @@ dependencies = [
 
 [[package]]
 name = "aw-watcher-win-vdesktop"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
+ "anyhow",
+ "auto-launch",
  "aw-client-rust",
  "aw-models",
  "chrono",
@@ -1181,7 +1200,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "winreg",
+ "winreg 0.50.0",
 ]
 
 [[package]]
@@ -2090,6 +2109,15 @@ name = "windows_x86_64_msvc"
 version = "0.53.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "271414315aff87387382ec3d271b52d7ae78726f5d44ac98b4f4030c91880486"
+
+[[package]]
+name = "winreg"
+version = "0.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "80d0f4e272c85def139476380b12f9ac60926689dd2e01d4923222f40580869d"
+dependencies = [
+ "winapi",
+]
 
 [[package]]
 name = "winreg"

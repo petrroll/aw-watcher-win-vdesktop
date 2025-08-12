@@ -1,6 +1,6 @@
 [package]
 name = "aw-watcher-win-vdesktop"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 
 [dependencies]
@@ -12,3 +12,5 @@ chrono = "^0.4"
 hostname = "^0.4"
 winvd = "0.0.48"
 clap = { version = "4.5.43", features = ["derive"] }
+auto-launch = "^0.5"
+anyhow = "^1.0"

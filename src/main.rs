@@ -1,9 +1,12 @@
+use std::env::current_exe;
+
+use auto_launch::AutoLaunchBuilder;
 use aw_client_rust::AwClient;
 use aw_models::{Bucket, Event};
 use chrono::TimeDelta;
 use serde_json::{Map, Value};
 use tokio::signal;
-use clap::Parser;
+use clap::{Parser};
 
 #[derive(Debug, Parser)]
 #[command(name = "aw-watcher-win-vdesktop", version, about = "ActivityWatch watcher for Windows virtual desktops")] 
@@ -15,6 +18,10 @@ struct Args {
     /// Testing mode: uses port 5666 unless --port is provided
     #[arg(long)]
     testing: bool,
+
+    /// Enable auto-run
+    #[arg(long)]
+    auto_run: bool,
 }
 
 async fn create_bucket(
@@ -53,16 +60,52 @@ fn get_current_vdesktop() -> String {
     vdesktop_name
 }
 
+fn setup_autorun() -> anyhow::Result<()> {
+    let exe_path_buf = current_exe()?;
+    let exe_path = exe_path_buf.to_string_lossy().into_owned();
+    
+    // Extract the filename without extension for the app name
+    let app_name = exe_path_buf
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .unwrap_or("aw-watcher-win-vdesktop");
+    
+    let auto_launch = AutoLaunchBuilder::new()
+        .set_app_name(app_name)
+        .set_app_path(&exe_path)
+        .set_use_launch_agent(true)
+        .build()?;
+
+    auto_launch.enable()?;
+    if !auto_launch.is_enabled()? {
+        return Err(anyhow::anyhow!(
+            "Failed to enable auto-launch for {}",
+            app_name
+        ));
+    }
+
+    println!("Auto-launch enabled for {}", app_name);
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() {
-    // Parse CLI
     let cli = Args::parse();
     let port = if let Some(p) = cli.port { p } else if cli.testing { 5666 } else { 5600 };
+    println!("Using port: {}", port);
+
+    if cli.auto_run {
+        if let Err(e) = setup_autorun() {
+            eprintln!("Failed to set up auto-run: {}", e);
+        }
+    }
+
     let aw_client = AwClient::new("localhost", port, "aw-watcher-win-vdestkop").unwrap();
+    println!("Connected to to ActivityWatch server at {}:{}", aw_client.hostname, port);
+    
     let bucket_id = format!("aw-watcher-win-vdesktop_{}", aw_client.hostname);
- 
-    println!("Creating bucket: {}", bucket_id);
     create_bucket(&aw_client, bucket_id.clone()).await.unwrap();
+    println!("Created bucket: {}", bucket_id);
 
     let ctrl_c = signal::ctrl_c();
     tokio::pin!(ctrl_c);
